@@ -2,7 +2,8 @@
 using System.Collections;
 using AIEngine;
 
-public class EnemyFSM : FSM {
+public class EnemyFSM : FSM 
+{
 
     private GameObject mPlayer;
 

@@ -7,9 +7,6 @@ public class EnemyAttackFS : FSMState {
     private Animation mEnemyAnimation;
     private EnemyHealthController mEnemyHealth;
 
-    private GameObject[] waypoints;
-    private GameObject currentWaypoint;
-
     private PlayerHealthController mPlayerHealth;
     private Animation mPlayerAnimation;
 
