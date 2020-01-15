@@ -1,0 +1,12 @@
+*.csproj
+.vscode/settings.json
+Assets/TextMesh Pro
+Library
+Logs
+Temp
+Packages
+ProjectSettings
+UnityPackageManager
+obj
+*.sln
+*.DS_STORE

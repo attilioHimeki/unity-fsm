@@ -1,10 +1,9 @@
 ﻿using UnityEngine;
-using System.Collections;
 using AIEngine;
+public class EnemyPatrolFS : FSMState 
+{
 
-public class EnemyPatrolFS : FSMState {
-
-    private NavMeshAgent mEnemyNavAgent;
+    private UnityEngine.AI.NavMeshAgent mEnemyNavAgent;
     private Animation mEnemyAnimation;
 
     private bool isWaiting;
@@ -19,15 +18,15 @@ public class EnemyPatrolFS : FSMState {
 
     private float maxWaypointDistance = 20.0f;
 
-    private PlayerHealthController playerHealth;
+    private HealthController playerHealth;
 
     public EnemyPatrolFS(FSM fsm, GameObject enemy, GameObject player)
         : base(fsm, enemy, player)
     {
-        mEnemyNavAgent = enemy.GetComponent<NavMeshAgent>();
+        mEnemyNavAgent = enemy.GetComponent<UnityEngine.AI.NavMeshAgent>();
         mEnemyAnimation = enemy.GetComponent<Animation>();
 
-        playerHealth = player.GetComponent<PlayerHealthController>();
+        playerHealth = player.GetComponent<HealthController>();
 
         waypoints = GameObject.FindGameObjectsWithTag("EnemyWaypoint");
     }
@@ -45,7 +44,7 @@ public class EnemyPatrolFS : FSMState {
 
     }
 
-    override public void Update()
+    override public void OnStateUpdate()
     {
         if(isTargetVisible())
         {
@@ -150,6 +149,5 @@ public class EnemyPatrolFS : FSMState {
         Gizmos.DrawWireSphere(mAgent.transform.position, sphereRadius);
         Gizmos.DrawRay(mAgent.transform.position, mAgent.transform.forward * viewRange);
     }
-
 
 }

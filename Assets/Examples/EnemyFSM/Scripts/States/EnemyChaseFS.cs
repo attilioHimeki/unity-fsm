@@ -4,7 +4,7 @@ using AIEngine;
 
 public class EnemyChaseFS : FSMState {
 
-    private NavMeshAgent mEnemyNavAgent;
+    private UnityEngine.AI.NavMeshAgent mEnemyNavAgent;
     private Animation mEnemyAnimation;
 
     private bool isWaiting;
@@ -19,7 +19,7 @@ public class EnemyChaseFS : FSMState {
     public EnemyChaseFS(FSM fsm, GameObject enemy, GameObject player)
         : base(fsm, enemy, player)
     {
-        mEnemyNavAgent = enemy.GetComponent<NavMeshAgent>();
+        mEnemyNavAgent = enemy.GetComponent<UnityEngine.AI.NavMeshAgent>();
         mEnemyAnimation = enemy.GetComponent<Animation>();
     }
 
@@ -31,12 +31,12 @@ public class EnemyChaseFS : FSMState {
 
     override public void OnStateExit()
     {
-        mEnemyNavAgent.Stop();
+        mEnemyNavAgent.isStopped = true;
         mEnemyNavAgent.ResetPath();
         mEnemyAnimation.Play("idle");
     }
 
-    override public void Update()
+    override public void OnStateUpdate()
     {
         float distance = Vector3.Distance(mPlayer.transform.position, mAgent.transform.position);
 

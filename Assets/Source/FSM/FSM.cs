@@ -1,20 +1,19 @@
 ﻿using UnityEngine;
-using System.Collections;
-using System.Collections.Generic;
 
 namespace AIEngine
 {
 
     /**
      * Extend this class to define your own state machine.
-     *
      * */
     public abstract class FSM : MonoBehaviour
     {
 
-        public Renderer meshRenderer;
+        public Renderer agentView;
         public StateId initialState;
         public bool updateOnlyWhenVisible = true;
+
+        public bool initialised { get; private set; }
 
         protected FSMState currentState;
 
@@ -46,23 +45,16 @@ namespace AIEngine
 
         public virtual void InitFSM()
         {
-            currentState = CreateState(EnemyStateId.Patrol);
+            currentState = CreateState(initialState);
         }
 
         public virtual void UpdateFSM()
         {
             if (currentState != null)
             {
-                if (updateOnlyWhenVisible)
+                if (!updateOnlyWhenVisible || agentView.isVisible)
                 {
-                    if (meshRenderer.isVisible)
-                    {
-                        currentState.Update();
-                    }
-                }
-                else
-                {
-                    currentState.Update();
+                    currentState.OnStateUpdate();
                 }
             }
         }

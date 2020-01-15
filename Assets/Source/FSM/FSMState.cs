@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using System.Collections;
 
 namespace AIEngine
 {
@@ -15,7 +14,7 @@ namespace AIEngine
 
         abstract public void OnStateEnter();
         abstract public void OnStateExit();
-        abstract public void Update();
+        abstract public void OnStateUpdate();
         abstract public void OnDrawGizmos();
 
         protected GameObject mAgent;

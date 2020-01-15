@@ -5,9 +5,9 @@ using AIEngine;
 public class EnemyAttackFS : FSMState {
 
     private Animation mEnemyAnimation;
-    private EnemyHealthController mEnemyHealth;
+    private HealthController mEnemyHealth;
 
-    private PlayerHealthController mPlayerHealth;
+    private HealthController mPlayerHealth;
     private Animation mPlayerAnimation;
 
     private float mAttackTimeCounter;
@@ -19,10 +19,10 @@ public class EnemyAttackFS : FSMState {
     {
         mEnemyAnimation = enemy.GetComponent<Animation>();
 
-        mPlayerHealth = mPlayer.GetComponent<PlayerHealthController>();
+        mPlayerHealth = mPlayer.GetComponent<HealthController>();
         mPlayerAnimation = mPlayer.GetComponent<Animation>();
 
-        mEnemyHealth = enemy.GetComponent<EnemyHealthController>();
+        mEnemyHealth = enemy.GetComponent<HealthController>();
     }
 
     override public void OnStateEnter()
@@ -36,7 +36,7 @@ public class EnemyAttackFS : FSMState {
         mEnemyAnimation.Play("idle");
     }
 
-    override public void Update()
+    override public void OnStateUpdate()
     {
 
         float distance = Vector3.Distance(mPlayer.transform.position, mAgent.transform.position);
