@@ -1,13 +1,13 @@
-﻿namespace AIEngine
+﻿using UnityEngine;
+
+namespace AIEngine
 {
 
-    /**
-     * Extend this class to define different states for your own state machine.
-     * */
+    [System.Serializable]
     public class StateId
     {
-
-        private readonly string mId;
+        [SerializeField]
+        private string mId;
 
         public StateId(string id)
         {

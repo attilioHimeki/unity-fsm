@@ -1,63 +1,50 @@
 ﻿using UnityEngine;
-using System.Collections;
 using AIEngine;
 
-public class EnemyAttackFS : FSMState {
-
-    private Animation mEnemyAnimation;
-    private HealthController mEnemyHealth;
-
-    private HealthController mPlayerHealth;
-    private Animation mPlayerAnimation;
-
+public class EnemyAttackFS : FSMState 
+{
+    private PlayerController player;
     private float mAttackTimeCounter;
+    private float maxDistanceFromTarget = 5.0f;
+    private float attackIntervalSecs = 3.0f;
 
-    private float maxDistanceFromTarget = 4.0f;
-
-    public EnemyAttackFS(FSM fsm, GameObject enemy, GameObject player)
-        : base(fsm, enemy, player)
+    public EnemyAttackFS(FSM fsm, GameObject owner)
+        : base(fsm, owner)
     {
-        mEnemyAnimation = enemy.GetComponent<Animation>();
-
-        mPlayerHealth = mPlayer.GetComponent<HealthController>();
-        mPlayerAnimation = mPlayer.GetComponent<Animation>();
-
-        mEnemyHealth = enemy.GetComponent<HealthController>();
+        player = ExampleWorld.instance.getPlayerAgent();
     }
 
     override public void OnStateEnter()
     {
-        Attack();
         mAttackTimeCounter = 0.0f;
     }
 
     override public void OnStateExit()
     {
-        mEnemyAnimation.Play("idle");
+        
     }
 
     override public void OnStateUpdate()
     {
-
-        float distance = Vector3.Distance(mPlayer.transform.position, mAgent.transform.position);
+        float distance = Vector3.Distance(player.transform.position, ownerAgent.transform.position);
 
         if (distance > maxDistanceFromTarget)
         {
-            mFSM.MoveToState(EnemyStateId.Chase);
+            stateMachine.MoveToState(EnemyStateId.Chase);
         }
-        else if(mPlayerHealth.IsDead())
+        else if(player.IsDead())
         {
-            mFSM.MoveToState(EnemyStateId.Patrol);
+            stateMachine.MoveToState(EnemyStateId.Patrol);
         }
         else
         {
-            Vector3 point = mPlayer.transform.position;
-            point.y = mAgent.transform.position.y;
-            mAgent.transform.LookAt(point);
+            Vector3 point = player.transform.position;
+            point.y = ownerAgent.transform.position.y;
+            ownerAgent.transform.LookAt(point);
 
             mAttackTimeCounter += Time.deltaTime;
 
-            if (mAttackTimeCounter > 2.0f)
+            if (mAttackTimeCounter >= attackIntervalSecs)
             {
                 Attack();
                 mAttackTimeCounter = 0.0f;
@@ -68,19 +55,7 @@ public class EnemyAttackFS : FSMState {
 
     private void Attack()
     {
-
-        mPlayerAnimation.CrossFade("damage");
-        mPlayerAnimation.CrossFadeQueued("idle");
-
-        mPlayerHealth.LoseHealth(10);
-
-        mEnemyAnimation.CrossFade("attack_1");
-        mEnemyAnimation.CrossFadeQueued("idle");
-    }
-
-    public override void OnDrawGizmos()
-    {
-        Gizmos.DrawWireSphere(mAgent.transform.position, maxDistanceFromTarget);
+        player.LoseHealth(20);
     }
 
 }

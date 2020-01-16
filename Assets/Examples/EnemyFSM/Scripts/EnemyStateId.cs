@@ -8,7 +8,6 @@ public class EnemyStateId : StateId
 
     public EnemyStateId(string id)
         : base(id)
-    {
-    }
+    {}
 
 }

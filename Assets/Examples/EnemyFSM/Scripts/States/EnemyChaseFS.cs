@@ -1,65 +1,53 @@
 ﻿using UnityEngine;
-using System.Collections;
 using AIEngine;
 
-public class EnemyChaseFS : FSMState {
+public class EnemyChaseFS : FSMState 
+{
 
-    private UnityEngine.AI.NavMeshAgent mEnemyNavAgent;
-    private Animation mEnemyAnimation;
-
-    private bool isWaiting;
-    private float waitCounter;
-
-    private GameObject[] waypoints;
-    private GameObject currentWaypoint;
+    private UnityEngine.AI.NavMeshAgent enemyNavAgent;
+    private PlayerController player;
 
     private float maxAttackDistance = 3.0f;
-    private float maxChaseDistance = 10.0f;
+    private float maxChaseDistance = 6.0f;
 
-    public EnemyChaseFS(FSM fsm, GameObject enemy, GameObject player)
-        : base(fsm, enemy, player)
+    public EnemyChaseFS(FSM fsm, GameObject owner)
+        : base(fsm, owner)
     {
-        mEnemyNavAgent = enemy.GetComponent<UnityEngine.AI.NavMeshAgent>();
-        mEnemyAnimation = enemy.GetComponent<Animation>();
+        enemyNavAgent = owner.GetComponent<UnityEngine.AI.NavMeshAgent>();
+
+        player = ExampleWorld.instance.getPlayerAgent();
     }
 
     override public void OnStateEnter()
     {
-        mEnemyNavAgent.SetDestination(mPlayer.transform.position);
-        mEnemyAnimation.Play("walk");
+        enemyNavAgent.SetDestination(player.transform.position);
     }
 
     override public void OnStateExit()
     {
-        mEnemyNavAgent.isStopped = true;
-        mEnemyNavAgent.ResetPath();
-        mEnemyAnimation.Play("idle");
+        enemyNavAgent.isStopped = true;
+        enemyNavAgent.ResetPath();
     }
 
     override public void OnStateUpdate()
     {
-        float distance = Vector3.Distance(mPlayer.transform.position, mAgent.transform.position);
+        float distance = Vector3.Distance(ownerAgent.transform.position, player.transform.position);
 
         if (distance < maxAttackDistance)
         {
-            mFSM.MoveToState(EnemyStateId.Attack);
+            stateMachine.MoveToState(EnemyStateId.Attack);
         } 
-        else if (mEnemyNavAgent.remainingDistance < 2.0f)
+        else
         {
-            if(distance < 10.0f)
+            if(distance < maxChaseDistance)
             {
-                mEnemyNavAgent.SetDestination(mPlayer.transform.position);
+                enemyNavAgent.SetDestination(player.transform.position);
             }
             else
             {
-                mFSM.MoveToState(EnemyStateId.Patrol);
+                stateMachine.MoveToState(EnemyStateId.Patrol);
             }
         }
-    }
-
-    public override void OnDrawGizmos()
-    {
-        Gizmos.DrawLine(mAgent.transform.position, mAgent.transform.forward * maxChaseDistance);
     }
 
 }

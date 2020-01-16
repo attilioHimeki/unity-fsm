@@ -3,37 +3,29 @@ using AIEngine;
 public class EnemyPatrolFS : FSMState 
 {
 
-    private UnityEngine.AI.NavMeshAgent mEnemyNavAgent;
-    private Animation mEnemyAnimation;
-
-    private bool isWaiting;
+    private UnityEngine.AI.NavMeshAgent ownerNavAgent;
     private float waitCounter;
 
-    private GameObject[] waypoints;
-    private GameObject currentWaypoint;
+    private Transform[] waypoints;
+    private Transform currentWaypoint;
 
-    private float viewFieldRadius = 80.0f;
+    private float viewFieldRadius = 120.0f;
     private float viewRange = 6.0f;
-    private float sphereRadius = 4.0f;
 
-    private float maxWaypointDistance = 20.0f;
+    private PlayerController player;
 
-    private HealthController playerHealth;
-
-    public EnemyPatrolFS(FSM fsm, GameObject enemy, GameObject player)
-        : base(fsm, enemy, player)
+    public EnemyPatrolFS(FSM fsm, GameObject owner)
+        : base(fsm, owner)
     {
-        mEnemyNavAgent = enemy.GetComponent<UnityEngine.AI.NavMeshAgent>();
-        mEnemyAnimation = enemy.GetComponent<Animation>();
+        ownerNavAgent = owner.GetComponent<UnityEngine.AI.NavMeshAgent>();
 
-        playerHealth = player.GetComponent<HealthController>();
+        player = ExampleWorld.instance.getPlayerAgent();
 
-        waypoints = GameObject.FindGameObjectsWithTag("EnemyWaypoint");
+        waypoints = ExampleWorld.instance.getWaypoints();
     }
 
     override public void OnStateEnter()
     {
-        isWaiting = false;
         waitCounter = 0.0f;
 
         SetNewWaypoint();
@@ -41,14 +33,14 @@ public class EnemyPatrolFS : FSMState
 
     override public void OnStateExit()
     {
-
+        ownerNavAgent.isStopped = true;
     }
 
     override public void OnStateUpdate()
     {
         if(isTargetVisible())
         {
-            mFSM.MoveToState(EnemyStateId.Chase);
+            stateMachine.MoveToState(EnemyStateId.Chase);
         }
         else if(!IsMoving())
         {
@@ -64,60 +56,44 @@ public class EnemyPatrolFS : FSMState
 
     bool IsMoving()
     {
-        return mEnemyNavAgent.velocity.sqrMagnitude > 0.0f;
+        return ownerNavAgent.velocity.sqrMagnitude > 0.0f;
     }
 
     void SetNewWaypoint()
     {
-        GameObject newWaypoint = FindCloseWaypoint();
-        if(newWaypoint == null)
+        currentWaypoint = FindRandomWaypoint();
+
+        if(currentWaypoint)
         {
-            newWaypoint = FindRandomWaypoint();
+            ownerNavAgent.SetDestination(currentWaypoint.transform.position);
         }
-
-        currentWaypoint = newWaypoint;
-
-        mEnemyAnimation.Play("walk");
-
-        mEnemyNavAgent.SetDestination(currentWaypoint.transform.position);
     }
-
-    GameObject FindCloseWaypoint()
+    Transform FindRandomWaypoint()
     {
-        Collider[] colliders = Physics.OverlapSphere(mAgent.transform.position, maxWaypointDistance);
-
-        foreach(Collider c in colliders)
+        if(waypoints.Length > 0)
         {
-            if(c.tag == "EnemyWaypoint")
+            Transform newWaypoint;
+            do
             {
-                return c.gameObject;
+                newWaypoint = waypoints[Random.Range(0, waypoints.Length - 1)];
             }
+            while (currentWaypoint == newWaypoint);
+
+            return newWaypoint;
         }
 
         return null;
     }
 
-    GameObject FindRandomWaypoint()
-    {
-        GameObject newWaypoint;
-        do
-        {
-            newWaypoint = waypoints[Random.Range(0, waypoints.Length - 1)];
-        }
-        while (currentWaypoint == newWaypoint);
-
-        return newWaypoint;
-    }
-
     bool isTargetVisible()
     {
-        return !playerHealth.IsDead() && (CanSeePlayer() || IsNearbyPlayer());
+        return !player.IsDead() && CanSeePlayer();
     }
 
     bool CanSeePlayer()
     {
-        Vector3 direction = mPlayer.transform.position - mAgent.transform.position;
-        float angle = Vector3.Angle(direction, mAgent.transform.forward);
+        Vector3 direction = player.transform.position - ownerAgent.transform.position;
+        float angle = Vector3.Angle(direction, ownerAgent.transform.forward);
         float distance = direction.magnitude;
 
         if (distance < viewRange && angle < viewFieldRadius)
@@ -128,26 +104,6 @@ public class EnemyPatrolFS : FSMState
         {
             return false;
         }
-    }
-
-    bool IsNearbyPlayer()
-    {
-        Collider[] colliders = Physics.OverlapSphere(mAgent.transform.position, sphereRadius);
-
-        foreach (Collider c in colliders)
-        {
-            if (c.tag == "Player")
-            {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    public override void OnDrawGizmos()
-    {
-        Gizmos.DrawWireSphere(mAgent.transform.position, sphereRadius);
-        Gizmos.DrawRay(mAgent.transform.position, mAgent.transform.forward * viewRange);
     }
 
 }
