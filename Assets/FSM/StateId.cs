@@ -6,8 +6,8 @@ namespace AIEngine
     [System.Serializable]
     public class StateId
     {
-        [SerializeField]
-        private string mId;
+        public static readonly StateId None = new StateId("None");
+        [SerializeField] private string mId;
 
         public StateId(string id)
         {

@@ -18,6 +18,11 @@ public class EnemyChaseFS : FSMState
         player = ExampleWorld.instance.getPlayerAgent();
     }
 
+    public override StateId GetId()
+    {
+        return EnemyStateId.Chase;
+    }
+
     override public void OnStateEnter()
     {
         enemyNavAgent.SetDestination(player.transform.position);

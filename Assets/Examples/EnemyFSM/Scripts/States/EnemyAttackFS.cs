@@ -14,6 +14,11 @@ public class EnemyAttackFS : FSMState
         player = ExampleWorld.instance.getPlayerAgent();
     }
 
+     public override StateId GetId()
+    {
+        return EnemyStateId.Attack;
+    }
+
     override public void OnStateEnter()
     {
         mAttackTimeCounter = 0.0f;

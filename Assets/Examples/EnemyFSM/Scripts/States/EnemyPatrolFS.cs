@@ -24,6 +24,11 @@ public class EnemyPatrolFS : FSMState
         waypoints = ExampleWorld.instance.getWaypoints();
     }
 
+    public override StateId GetId()
+    {
+        return EnemyStateId.Patrol;
+    }
+
     override public void OnStateEnter()
     {
         waitCounter = 0.0f;

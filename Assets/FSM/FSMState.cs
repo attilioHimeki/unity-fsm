@@ -11,6 +11,7 @@ namespace AIEngine
             ownerAgent = owner;
         }
 
+        abstract public StateId GetId();
         abstract public void OnStateEnter();
         abstract public void OnStateExit();
         abstract public void OnStateUpdate();

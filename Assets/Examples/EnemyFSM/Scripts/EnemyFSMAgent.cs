@@ -7,9 +7,9 @@ public class EnemyFSMAgent : FSMAgent
     {
         base.InitialiseFSM();
 
-        stateMachine.AddState(EnemyStateId.Attack, new EnemyAttackFS(stateMachine, gameObject));
-        stateMachine.AddState(EnemyStateId.Chase, new EnemyChaseFS(stateMachine, gameObject));
-        stateMachine.AddState(EnemyStateId.Patrol, new EnemyPatrolFS(stateMachine, gameObject));
+        stateMachine.AddState(new EnemyAttackFS(stateMachine, gameObject));
+        stateMachine.AddState(new EnemyChaseFS(stateMachine, gameObject));
+        stateMachine.AddState(new EnemyPatrolFS(stateMachine, gameObject));
 
         stateMachine.SetInitialState(EnemyStateId.Patrol);
     }

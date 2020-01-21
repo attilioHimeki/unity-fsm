@@ -7,6 +7,7 @@ namespace AIEngine
         public bool running { get; private set; }
         private Dictionary<StateId, FSMState> states;
         private StateId initialState;
+        private StateId previousState;
         private FSMState currentState;
 
         public FSM()
@@ -14,9 +15,9 @@ namespace AIEngine
             states = new Dictionary<StateId, FSMState>();
         }
 
-        public void AddState(StateId id, FSMState state)
+        public void AddState(FSMState state)
         {
-            states[id] = state;
+            states[state.GetId()] = state;
         }
 
         public void SetInitialState(StateId id)
@@ -27,6 +28,8 @@ namespace AIEngine
         public void MoveToState(StateId id)
         {
             currentState.OnStateExit();
+
+            previousState = currentState.GetId();
 
             states.TryGetValue(id, out currentState);
 
@@ -50,6 +53,8 @@ namespace AIEngine
                 {
                     currentState.OnStateEnter();
                 }
+
+                previousState = StateId.None;
 
                 running = true;
             }
