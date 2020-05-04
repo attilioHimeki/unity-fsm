@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace AIEngine
+namespace Himeki.FSM
 {
     public abstract class FSMState
     {
