@@ -27,19 +27,22 @@ namespace Himeki.FSM
 
         public void MoveToState(StateId id)
         {
-            currentState.OnStateExit();
-
-            previousState = currentState.GetId();
-
-            states.TryGetValue(id, out currentState);
-
-            if (currentState != null)
+            if (id != currentState.GetId())
             {
-                currentState.OnStateEnter();
-            }
-            else
-            {
-                // show error
+                currentState.OnStateExit();
+
+                previousState = currentState.GetId();
+
+                states.TryGetValue(id, out currentState);
+
+                if (currentState != null)
+                {
+                    currentState.OnStateEnter();
+                }
+                else
+                {
+                    UnityEngine.Debug.LogErrorFormat("Trying to move to State {0} but cannot be found", id);
+                }
             }
         }
 
@@ -52,15 +55,19 @@ namespace Himeki.FSM
                 if (currentState != null)
                 {
                     currentState.OnStateEnter();
+
+                    previousState = StateId.None;
+
+                    running = true;
                 }
-
-                previousState = StateId.None;
-
-                running = true;
+                else
+                {
+                    UnityEngine.Debug.LogError("Initial state not found, FSM cannot be started");
+                }
             }
             else
             {
-                // Show error
+                UnityEngine.Debug.LogError("No states defined, FSM cannot be started");
             }
         }
 
@@ -78,7 +85,7 @@ namespace Himeki.FSM
             }
             else
             {
-                // show error
+                UnityEngine.Debug.LogError("No current state, FSM cannot be updated");
             }
         }
     }
